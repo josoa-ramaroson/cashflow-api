@@ -22,7 +22,7 @@ app.post("/auth/login", (req, res) => {
     password === process.env.PASSWORD
   ) {
     const token = jwt.sign({ username }, process.env.JWT_SECRET, {
-      expiresIn: "1h"
+      expiresIn: "12h"
     })
     return res.json({ token })
   }
@@ -44,14 +44,17 @@ app.post("/transactions", verifyToken, async (req, res) => {
 })
 
 app.put("/transactions/:id", verifyToken, async (req, res) => {
-  const db = await getDB()
-  const { id } = req.params
-  await db.collection("transactions").updateOne(
+  const db = await getDB();
+  const { id } = req.params;
+
+  const { value: updatedTransaction } = await db.collection("transactions").findOneAndUpdate(
     { _id: new (await import("mongodb")).ObjectId(id) },
-    { $set: req.body }
-  )
-  res.json({ ok: true })
-})
+    { $set: req.body },
+    { returnDocument: "after" } // returns the updated document
+  );
+
+  res.json(updatedTransaction);
+});
 
 app.delete("/transactions/:id", verifyToken, async (req, res) => {
   const db = await getDB()
