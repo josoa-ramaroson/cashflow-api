@@ -4,11 +4,15 @@ import jwt from "jsonwebtoken"
 import { getDB } from "../lib/db.js"
 import { verifyToken } from "../lib/auth.js"
 import { createTransaction } from "../lib/transaction.js"
+import cors from "cors";
+
 
 dotenv.config()
 
 const app = express()
 app.use(express.json())
+// Enable CORS for all origins
+app.use(cors());
 
 /* ------------------ AUTH ------------------ */
 app.post("/auth/login", (req, res) => {
