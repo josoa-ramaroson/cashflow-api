@@ -47,17 +47,14 @@ app.put("/transactions/:id", verifyToken, async (req, res) => {
   const db = await getDB();
   const { id } = req.params;
 
-  const { value: updatedTransaction } = await db.collection("transactions").findOneAndUpdate(
+  const updateData = await db.collection("transactions").findOneAndUpdate(
     { _id: new (await import("mongodb")).ObjectId(id) },
     { $set: req.body },
     { returnDocument: "after" } // returns the document after the update
   );
 
-  if (!updatedTransaction) {
-    return res.status(404).json({ error: "Transaction not found" });
-  }
 
-  res.json(updatedTransaction);
+  res.json(updateData);
 });
 
 app.delete("/transactions/:id", verifyToken, async (req, res) => {
